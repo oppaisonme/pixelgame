@@ -8,39 +8,38 @@ import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.Random;
 
-
 public class Draw extends JComponent{
-
-	private BufferedImage image; 
-	private BufferedImage backgroundImage;
-	public URL resource = getClass().getResource("hero/idle0.png");
-	public URL Standing;
-
-	// circle's position
-	public int x = 510;
-	public int y = 510;
-	public int height = 0;
-	public int width = 0;
-
-	// animation states
-	public int state = 0;
-
-	public Random randomizer;
-
-	public int enemyCount;
-	Monster[] monsters = new Monster[10];
 
 	public boolean runback = false;
 	boolean jumping = false;
 	boolean falling = false;
 	public boolean right = true;
 	public boolean notMoving = true;
-	
+
+	private BufferedImage image;
+	private BufferedImage backgroundImage;
+	public URL resource = getClass().getResource("hero/idle0.png");
+	public URL Standing;
+	// circle's position
+	public int x = 300;
+	public int y = 300;
+	public int height = 0;
+	public int width = 0;
+
+	// animation states
+	public int state = 0;
+
+	// randomizer
+	public Random randomizer;
+
+	// enemy
+	public int enemyCount;
+	Monster[] monsters = new Monster[10];
+
 	public Draw(){
 		randomizer = new Random();
 		spawnEnemy();
 		idle();
-
 
 		try{
 			image = ImageIO.read(resource);
@@ -52,6 +51,7 @@ public class Draw extends JComponent{
 
 		height = image.getHeight();
 		width = image.getWidth();
+
 		startGame();
 	}
 
@@ -78,11 +78,8 @@ public class Draw extends JComponent{
 
 	public void spawnEnemy(){
 		if(enemyCount < 10){
-			int random = randomizer.nextInt(400);
-			if(random < 400 || random < 30){
-			monsters[enemyCount] = new Monster(random, 510, this);
+			monsters[enemyCount] = new Monster(randomizer.nextInt(500), randomizer.nextInt(500), this);
 			enemyCount++;
-			}
 		}
 	}
 
@@ -148,7 +145,6 @@ public class Draw extends JComponent{
 		}
 	}
 
-
 	public void attackAnimation(){
 		Thread thread1 = new Thread(new Runnable(){
 			public void run(){
@@ -182,7 +178,7 @@ public class Draw extends JComponent{
 					}
 				}
 
-				for(int x=0; x > monsters.length; x++){
+				for(int x=0; x<monsters.length; x++){
 					if(monsters[x]!=null){
 						if(monsters[x].contact){
 							monsters[x].life = monsters[x].life - 10;
@@ -192,251 +188,6 @@ public class Draw extends JComponent{
 			}
 		});
 		thread1.start();
-	}
-
-
-
-	public void jumpAnimation(){
-		state = 0;
-		jumping = true;
-		Thread thread2 = new Thread(new Runnable(){
-			public void run(){
-				while(jumping){
-				for(int ctr =0; ctr < 4; ctr++){
-					try {
-						if(runback != true){
-						if(state == ctr){
-							resource = getClass().getResource("jump/jump"+ctr+".png");
-							y = y - 4;
-							x = x + 1;
-							System.out.println(ctr);
-							
-						}
-						else if(state > 5){
-							jumping = false;
-							state= 0;
-							fallAnimation();
-							}
-						}else{
-							if(state == ctr){
-							resource = getClass().getResource("jump/jumpback"+ctr+".png");
-							y = y - 4;
-							x = x + 1;
-							repaint();
-							System.out.println(ctr);
-							
-						}
-						else if(state > 5){
-							jumping = false;
-							state= 0;
-							fallAnimation();
-							}
-						}
-						try{
-							image = ImageIO.read(resource);
-						}
-						catch(IOException e){
-							e.printStackTrace();
-						}
-				        repaint();
-				        state++;
-				        Thread.sleep(100);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-		});
-
-		thread2.start();
-	}
-
-	public void fallAnimation(){
-		state = 0;
-		falling = true;
-		Thread thread2 = new Thread(new Runnable(){
-			public void run(){
-				while(falling){
-				for(int ctr =0; ctr < 1; ctr++){
-					try {
-						if(runback != true){
-						if(state == ctr){
-
-							resource = getClass().getResource("jump/fall"+ctr+".png");
-							y = y + 16;
-							x = x + 15;
-							System.out.println(ctr);
-							
-						}
-						else if(state > 3){
-							resource = getClass().getResource("hero/idle"+ctr+".png");
-							falling = false;
-							state= 0;
-							idle();	
-
-							}
-						}else{
-							if(state == ctr){
-
-							resource = getClass().getResource("jump/fallback"+ctr+".png");
-							y = y + 16;
-							x = x - 15;
-							System.out.println(ctr);
-							
-						}
-						else if(state > 3){
-							resource = getClass().getResource("hero/idleback"+ctr+".png");
-							falling = false;
-							state= 0;
-							idle();	
-							}
-						}
-						try{
-							image = ImageIO.read(resource);
-						}
-						catch(IOException e){
-							e.printStackTrace();
-						}
-				        repaint();
-				        state++;
-				        Thread.sleep(100);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-		});
-
-		thread2.start();
-	}
-
-	public void slideAnimation(){
-		Thread thread1 = new Thread(new Runnable(){
-			public void run(){
-				for(int ctr = 0; ctr < 6; ctr++){
-					try {
-						if(runback != true){
-						if(ctr == 6){
-							resource = getClass().getResource("hero/idle0.png");
-						}
-						else{
-							resource = getClass().getResource("slide/slide"+ctr+".png");
-							x = x + 10;
-						}
-						}else{
-						if(ctr == 6){
-							resource = getClass().getResource("hero/idleback0.png");
-						}
-						else{
-							resource = getClass().getResource("slide/slideback"+ctr+".png");
-							x = x - 10;
-						}
-						}
-						try{
-							image = ImageIO.read(resource);
-						}
-						catch(IOException e){
-							e.printStackTrace();
-						}
-				        repaint();
-				        Thread.sleep(100);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		});
-		thread1.start();
-	}
-	public void dodgecountanimation(){
-		Thread dcount = new Thread(new Runnable(){
-			public void run(){
-				for(int ctr = 0; ctr < 10; ctr++){
-					try {
-						if (right == true){
-						if(ctr == 9){
-							resource = getClass().getResource("hero/idle0.png");
-						}
-						else{
-							resource = getClass().getResource("dodgecount/dodgecount"+ctr+".png");
-						}
-						}else{
-						if(ctr == 4){
-							resource = getClass().getResource("hero/idleback1.png");
-						}
-						else{
-							resource = getClass().getResource("dodgecount/dodgecountback"+ctr+".png");
-						}
-						}
-						try{
-							image = ImageIO.read(resource);
-						}
-						catch(IOException e){
-							e.printStackTrace();
-						}
-						repaint();
-				        Thread.sleep(50);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-
-				for(int x=0; x > monsters.length; x++){
-					if(monsters[x]!=null){
-						if(monsters[x].contact){
-							monsters[x].life = monsters[x].life - 50;
-						}
-					}
-				}
-			}
-		});
-		dcount.start();
-	}
-	public void rdriveAnimation(){
-		Thread rdrive = new Thread(new Runnable(){
-			public void run(){
-				for(int ctr = 0; ctr < 23; ctr++){
-					try {
-						if (right == true){
-						if(ctr == 22){
-							resource = getClass().getResource("hero/idle0.png");
-						}
-						else{
-							resource = getClass().getResource("rdrive/rdrive"+ctr+".png");
-						}
-						}else{
-						if(ctr == 22){
-							resource = getClass().getResource("hero/idleback1.png");
-						}
-						else{
-							resource = getClass().getResource("rdrive/rdriveback"+ctr+".png");
-						}
-						}
-						try{
-							image = ImageIO.read(resource);
-						}
-						catch(IOException e){
-							e.printStackTrace();
-						}
-						repaint();
-				        Thread.sleep(50);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-
-				for(int x=0; x > monsters.length; x++){
-					if(monsters[x]!=null){
-						if(monsters[x].contact){
-							monsters[x].life = monsters[x].life - 100;
-						}
-					}
-				}
-			}
-		});
-		rdrive.start();
 	}
 
 	public void idle(){
@@ -480,38 +231,21 @@ public class Draw extends JComponent{
 			});
 			thread.start();
 		}
-		
-	public void slide(){
-	
-		slideAnimation();
-	}
-	public void rdrive(){
-
-		rdriveAnimation();
-	}
-	public void dodgecount(){
-	
-		dodgecountanimation();
-	}
-
-	public void jump(){
-	
-		jumpAnimation();
-	}
 
 	public void attack(){
-	
 		attackAnimation();
 	}
 
-	public void moveUp(){ 
+	public void moveUp(){
 		y = y - 5;
+		reloadImage0();
 		repaint();
 		checkCollision();
 	}
 
-	public void moveDown(){	
+	public void moveDown(){
 		y = y + 5;
+		reloadImage0();
 		repaint();
 		checkCollision();
 	}
@@ -527,7 +261,7 @@ public class Draw extends JComponent{
 
 	public void moveRight(){
 		notMoving = false;
-		right = true;	
+		right = true;
 		x = x + 5;
 		reloadImage0();
 		repaint();
@@ -548,22 +282,26 @@ public class Draw extends JComponent{
 				if(yChecker > monsters[x].yPos){
 					if(yChecker-monsters[x].yPos < monsters[x].height){
 						collideY = true;
+						System.out.println("collideY");
 					}
 				}
 				else{
-					if(monsters[x].yPos - yChecker < monsters[x].height){
+					if(monsters[x].yPos - (yChecker+height) < monsters[x].height){
 						collideY = true;
+						System.out.println("collideY");
 					}
 				}
 
 				if(xChecker > monsters[x].xPos){
-					if(xChecker-monsters[x].xPos < monsters[x].width){
+					if((xChecker-width)-monsters[x].xPos < monsters[x].width){
 						collideX = true;
+						System.out.println("collideX");
 					}
 				}
 				else{
-					if(monsters[x].xPos - xChecker < 5){
+					if(monsters[x].xPos-xChecker < monsters[x].width){
 						collideX = true;
+						System.out.println("collideX");
 					}
 				}
 			}
@@ -574,19 +312,28 @@ public class Draw extends JComponent{
 			}
 		}
 	}
-
 	
 	public void paintComponent(Graphics g){
 		super.paintComponent(g);
-		g.setColor(Color.YELLOW);
 		g.drawImage(backgroundImage, 0, 0, this);
 		g.drawImage(image, x, y, this);
-		for(int c = 0; c < monsters.length; c++){
+		
+		for(int c = 0; c < monsters.length; c++){		
 			if(monsters[c]!=null){
 				g.drawImage(monsters[c].image, monsters[c].xPos, monsters[c].yPos, this);
 				g.setColor(Color.GREEN);
 				g.fillRect(monsters[c].xPos+7, monsters[c].yPos, monsters[c].life, 2);
-			}
+			}	
+		}
+	}
+
+	public void checkDeath(){
+		for(int c = 0; c < monsters.length; c++){	
+			if(monsters[c]!=null){
+				if(!monsters[c].alive){
+				monsters[c] = null;
+				}	
+			}			
 		}
 	}
 }

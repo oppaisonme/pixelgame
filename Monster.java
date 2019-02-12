@@ -12,7 +12,7 @@ public class Monster{
 	public int yPos = 300;
 	public int width = 0;
 	public int height = 0;
-	public int life = 70;
+	public int life = 20;
 	public boolean idle = true;
 	public boolean alive = true;
 	public boolean contact = false;
@@ -121,10 +121,12 @@ public class Monster{
 							e.printStackTrace();
 						}
 					}
+
+					alive = false;
+					compPass.checkDeath();
 				}
 			});
 			monThread.start();
 		}
-		alive = false;
 	}
 }
